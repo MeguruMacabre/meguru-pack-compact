@@ -1,0 +1,37 @@
+# Build
+/bin/
+*.exe
+*.out
+*.test
+
+# Local Meguru Pack Compact config
+host-config.json
+client-config.json
+
+# Local test instances
+/ForTest/
+
+# Temporary files
+/tmp/
+*.tmp
+*.part
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+/logs/
+
+# IDE
+.idea/
+.vscode/
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+desktop.ini
