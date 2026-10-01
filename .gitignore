@@ -9,7 +9,7 @@ host-config.json
 client-config.json
 
 # Local test instances
-/ForTest/
+/aForTest/
 
 # Temporary files
 /tmp/

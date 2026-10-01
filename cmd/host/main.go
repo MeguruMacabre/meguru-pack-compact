@@ -9,24 +9,27 @@ import (
 
 	"github.com/MeguruMacabre/meguru-pack-compact/internal/config"
 	"github.com/MeguruMacabre/meguru-pack-compact/internal/instance"
+	"github.com/MeguruMacabre/meguru-pack-compact/internal/scanner"
+	"github.com/MeguruMacabre/meguru-pack-compact/internal/syncpolicy"
 )
 
 func main() {
-	root, err := os.Getwd()
+	appRoot, err := os.Getwd()
 	if err != nil {
 		fmt.Println("Error:", err)
 		return
 	}
 
-	fullPath := filepath.Join(root, "host-config.json")
-	fileIsExist, err := fileExists(fullPath)
+	configPath := filepath.Join(appRoot, "host-config.json")
+
+	configExists, err := fileExists(configPath)
 	if err != nil {
 		fmt.Println("Error:", err)
 		return
 	}
 
-	if !fileIsExist {
-		dirs, err := instance.FindCandidates(root)
+	if !configExists {
+		dirs, err := instance.FindCandidates(appRoot)
 		if err != nil {
 			fmt.Println("Error:", err)
 			return
@@ -53,7 +56,7 @@ func main() {
 		cfg := config.HostConfig{
 			InstanceDirectory: selectedCandidate,
 		}
-		err = config.SaveHostConfig(root, cfg)
+		err = config.SaveHostConfig(appRoot, cfg)
 		if err != nil {
 			fmt.Println("Error:", err)
 			return
@@ -61,34 +64,50 @@ func main() {
 
 	}
 
-	cfg, err := config.LoadHostConfig(root)
+	cfg, err := config.LoadHostConfig(appRoot)
 	if err != nil {
 		fmt.Println("Error:", err)
 		return
 	}
-	dirIsExist, err := dirExists(root, cfg.InstanceDirectory)
+	instanceExists, err := dirExists(appRoot, cfg.InstanceDirectory)
 	if err != nil {
 		fmt.Println("Error:", err)
 		return
 	}
-	if !dirIsExist {
+	if !instanceExists {
 		fmt.Println("Error: no such directory")
 		return
 	}
 	fmt.Println("Host Config:", cfg.InstanceDirectory)
 
-	instancePath := filepath.Join(root, cfg.InstanceDirectory)
+	instanceRoot := filepath.Join(appRoot, cfg.InstanceDirectory)
 
-	gameRoot, err := instance.FindGameRoot(instancePath)
+	gameRoot, err := instance.FindGameRoot(instanceRoot)
 	if err != nil {
 		fmt.Println("Error:", err)
 		return
 	}
 	fmt.Println("Game directory:", gameRoot)
+
+	scannedFiles, err := scanner.Scan(instanceRoot)
+	if err != nil {
+		fmt.Println("Error:", err)
+		return
+	}
+
+	for _, file := range scannedFiles {
+		absoluteFilePath := filepath.Join(instanceRoot, file.Path)
+		isManaged, err := syncpolicy.IsManaged(gameRoot, absoluteFilePath)
+		if err != nil {
+			fmt.Println("Error:", err)
+			return
+		}
+		fmt.Printf("%s - %d bytes | %t | %s\n", file.Path, file.Size, isManaged, file.Hash)
+	}
 }
 
-func fileExists(filename string) (bool, error) {
-	_, err := os.Stat(filename)
+func fileExists(path string) (bool, error) {
+	_, err := os.Stat(path)
 	if err == nil {
 		return true, nil
 	}

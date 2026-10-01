@@ -1,7 +1,8 @@
 package config
 
 import (
-	"encoding/json"
+	"encoding/json/jsontext"
+	"encoding/json/v2"
 	"os"
 	"path/filepath"
 )
@@ -11,20 +12,24 @@ type HostConfig struct {
 }
 
 func SaveHostConfig(root string, cfg HostConfig) error {
-	data, err := json.MarshalIndent(cfg, "", "  ")
+	data, err := json.Marshal(&cfg, jsontext.WithIndent("  "))
 	if err != nil {
 		return err
 	}
+
 	fullPath := filepath.Join(root, "host-config.json")
+
 	err = os.WriteFile(fullPath, data, 0644)
 	if err != nil {
 		return err
 	}
+
 	return nil
 }
 
 func LoadHostConfig(root string) (HostConfig, error) {
 	fullPath := filepath.Join(root, "host-config.json")
+
 	data, err := os.ReadFile(fullPath)
 	if err != nil {
 		return HostConfig{}, err
@@ -35,5 +40,6 @@ func LoadHostConfig(root string) (HostConfig, error) {
 	if err != nil {
 		return HostConfig{}, err
 	}
+
 	return cfg, nil
 }
