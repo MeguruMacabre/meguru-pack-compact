@@ -7,6 +7,7 @@
 # Local Meguru Pack Compact config
 host-config.json
 client-config.json
+/manifest.json
 
 # Local test instances
 /aForTest/

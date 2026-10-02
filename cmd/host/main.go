@@ -9,8 +9,8 @@ import (
 
 	"github.com/MeguruMacabre/meguru-pack-compact/internal/config"
 	"github.com/MeguruMacabre/meguru-pack-compact/internal/instance"
+	"github.com/MeguruMacabre/meguru-pack-compact/internal/manifest"
 	"github.com/MeguruMacabre/meguru-pack-compact/internal/scanner"
-	"github.com/MeguruMacabre/meguru-pack-compact/internal/syncpolicy"
 )
 
 func main() {
@@ -95,15 +95,39 @@ func main() {
 		return
 	}
 
-	for _, file := range scannedFiles {
-		absoluteFilePath := filepath.Join(instanceRoot, file.Path)
-		isManaged, err := syncpolicy.IsManaged(gameRoot, absoluteFilePath)
-		if err != nil {
-			fmt.Println("Error:", err)
-			return
-		}
-		fmt.Printf("%s - %d bytes | %t | %s\n", file.Path, file.Size, isManaged, file.Hash)
+	packManifest, err := manifest.Build(1, scannedFiles, instanceRoot, gameRoot)
+	if err != nil {
+		fmt.Println("Error:", err)
+		return
 	}
+	err = manifest.Save(appRoot, packManifest)
+	if err != nil {
+		fmt.Println("Error:", err)
+		return
+	}
+	manifestFromFile, err := manifest.Load(appRoot)
+	if err != nil {
+		fmt.Println("Error:", err)
+		return
+	}
+
+	fmt.Printf("Manifest v%d\n", manifestFromFile.FormatVersion)
+	fmt.Printf("Files: %d\n\n", len(manifestFromFile.Files))
+
+	for _, file := range manifestFromFile.Files {
+		status := "Install-only"
+		if file.Managed {
+			status = "Managed"
+		}
+
+		fmt.Printf("%-45s | %10d bytes | %-12s | %s\n",
+			file.Path,
+			file.Size,
+			status,
+			file.SHA256,
+		)
+	}
+
 }
 
 func fileExists(path string) (bool, error) {
