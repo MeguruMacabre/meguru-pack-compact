@@ -1,172 +1,19 @@
 package main
 
 import (
-	"errors"
+	"context"
 	"fmt"
-	"io/fs"
 	"os"
-	"path/filepath"
 
-	"github.com/MeguruMacabre/meguru-pack-compact/internal/config"
-	"github.com/MeguruMacabre/meguru-pack-compact/internal/instance"
-	"github.com/MeguruMacabre/meguru-pack-compact/internal/manifest"
-	"github.com/MeguruMacabre/meguru-pack-compact/internal/scanner"
+	"github.com/MeguruMacabre/meguru-pack-compact/internal/host"
 )
 
 func main() {
-	appRoot, err := os.Getwd()
+	ctx := context.Background()
+
+	err := host.Run(ctx)
 	if err != nil {
-		fmt.Println("Error:", err)
-		return
+		fmt.Fprintln(os.Stderr, "Error:", err)
+		os.Exit(1)
 	}
-
-	configPath := filepath.Join(appRoot, "host-config.json")
-
-	configExists, err := fileExists(configPath)
-	if err != nil {
-		fmt.Println("Error:", err)
-		return
-	}
-
-	if !configExists {
-		dirs, err := instance.FindCandidates(appRoot)
-		if err != nil {
-			fmt.Println("Error:", err)
-			return
-		}
-		if len(dirs) == 0 {
-			fmt.Println("Error: no candidates found")
-			return
-		}
-
-		for i, dir := range dirs {
-			fmt.Printf("%d: %s\n", i+1, dir)
-		}
-
-		fmt.Println()
-		fmt.Print("Select instance: ")
-
-		selectedCandidate, err := chooseCandidate(dirs)
-		if err != nil {
-			fmt.Println("Error:", err)
-			return
-		}
-
-		fmt.Println("Selected:", selectedCandidate)
-		cfg := config.HostConfig{
-			InstanceDirectory: selectedCandidate,
-		}
-		err = config.SaveHostConfig(appRoot, cfg)
-		if err != nil {
-			fmt.Println("Error:", err)
-			return
-		}
-
-	}
-
-	cfg, err := config.LoadHostConfig(appRoot)
-	if err != nil {
-		fmt.Println("Error:", err)
-		return
-	}
-	instanceExists, err := dirExists(appRoot, cfg.InstanceDirectory)
-	if err != nil {
-		fmt.Println("Error:", err)
-		return
-	}
-	if !instanceExists {
-		fmt.Println("Error: no such directory")
-		return
-	}
-	fmt.Println("Host Config:", cfg.InstanceDirectory)
-
-	instanceRoot := filepath.Join(appRoot, cfg.InstanceDirectory)
-
-	gameRoot, err := instance.FindGameRoot(instanceRoot)
-	if err != nil {
-		fmt.Println("Error:", err)
-		return
-	}
-	fmt.Println("Game directory:", gameRoot)
-
-	scannedFiles, err := scanner.Scan(instanceRoot)
-	if err != nil {
-		fmt.Println("Error:", err)
-		return
-	}
-
-	packManifest, err := manifest.Build(1, scannedFiles, instanceRoot, gameRoot)
-	if err != nil {
-		fmt.Println("Error:", err)
-		return
-	}
-	err = manifest.Save(appRoot, packManifest)
-	if err != nil {
-		fmt.Println("Error:", err)
-		return
-	}
-	manifestFromFile, err := manifest.Load(appRoot)
-	if err != nil {
-		fmt.Println("Error:", err)
-		return
-	}
-
-	fmt.Printf("Manifest v%d\n", manifestFromFile.FormatVersion)
-	fmt.Printf("Files: %d\n\n", len(manifestFromFile.Files))
-
-	for _, file := range manifestFromFile.Files {
-		status := "Install-only"
-		if file.Managed {
-			status = "Managed"
-		}
-
-		fmt.Printf("%-45s | %10d bytes | %-12s | %s\n",
-			file.Path,
-			file.Size,
-			status,
-			file.SHA256,
-		)
-	}
-
-}
-
-func fileExists(path string) (bool, error) {
-	_, err := os.Stat(path)
-	if err == nil {
-		return true, nil
-	}
-
-	if errors.Is(err, fs.ErrNotExist) {
-		return false, nil
-	}
-	return false, err
-}
-
-func dirExists(root string, name string) (bool, error) {
-	fullPath := filepath.Join(root, name)
-
-	info, err := os.Stat(fullPath)
-	if err == nil {
-		return info.IsDir(), nil
-	}
-
-	if errors.Is(err, fs.ErrNotExist) {
-		return false, nil
-	}
-
-	return false, err
-}
-
-func chooseCandidate(dirs []string) (string, error) {
-	var number int
-	_, err := fmt.Scan(&number)
-	if err != nil {
-		return "", err
-	}
-
-	length := len(dirs)
-	if number < 1 || number > length {
-		return "", fmt.Errorf("invalid candidate number: %d", number)
-	}
-	return dirs[number-1], nil
 }
