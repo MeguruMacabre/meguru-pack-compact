@@ -12,6 +12,7 @@ var managedDirs = map[string]struct{}{
 	"shaderpacks":   {},
 }
 
+// IsManaged определяет, относится ли файл к директориям, управляемым системой обновления.
 func IsManaged(gameRoot string, filePath string) (bool, error) {
 	relPath, err := filepath.Rel(gameRoot, filePath)
 	if err != nil {

@@ -18,6 +18,7 @@ type Change struct {
 	NewFile *manifest.File
 }
 
+// indexFiles создаёт индекс файлов по их путям для быстрого поиска.
 func indexFiles(files []manifest.File) map[string]manifest.File {
 	filesByPath := make(map[string]manifest.File)
 	for _, f := range files {
@@ -26,6 +27,7 @@ func indexFiles(files []manifest.File) map[string]manifest.File {
 	return filesByPath
 }
 
+// Compare сравнивает два манифеста и определяет действия ADD, UPDATE, DELETE и KEEP.
 func Compare(oldManifest, newManifest manifest.Manifest) []Change {
 	var changes []Change
 	oldFilesByPath := indexFiles(oldManifest.Files)

@@ -2,6 +2,7 @@ package instance
 
 import "os"
 
+// FindCandidates возвращает список директорий, доступных для выбора Minecraft-инстанса.
 func FindCandidates(root string) ([]string, error) {
 
 	entries, err := os.ReadDir(root)

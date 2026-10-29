@@ -11,6 +11,7 @@ import (
 	"github.com/MeguruMacabre/meguru-pack-compact/internal/instance"
 )
 
+// loadOrCreateHostConfig загружает конфигурацию Host или создаёт её при первом запуске.
 func loadOrCreateHostConfig(appRoot string) (config.HostConfig, error) {
 	configPath := filepath.Join(appRoot, "host-config.json")
 
@@ -59,6 +60,7 @@ func loadOrCreateHostConfig(appRoot string) (config.HostConfig, error) {
 	return cfg, nil
 }
 
+// chooseCandidate запрашивает у пользователя номер директории и возвращает выбранный вариант.
 func chooseCandidate(dirs []string) (string, error) {
 	var number int
 	_, err := fmt.Scan(&number)
@@ -72,6 +74,7 @@ func chooseCandidate(dirs []string) (string, error) {
 	return dirs[number-1], nil
 }
 
+// fileExists проверяет существование пути в файловой системе.
 func fileExists(path string) (bool, error) {
 	_, err := os.Stat(path)
 	if err == nil {

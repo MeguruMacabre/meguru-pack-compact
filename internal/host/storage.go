@@ -9,6 +9,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 )
 
+// connectS3 создаёт S3-клиент, загружает ключи доступа и проверяет доступность бакета.
 func connectS3(
 	ctx context.Context,
 	cfg config.HostConfig,

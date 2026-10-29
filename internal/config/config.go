@@ -20,6 +20,7 @@ type S3Credentials struct {
 	SecretKey string
 }
 
+// LoadS3Credentials получает ключи доступа к S3 из переменных окружения.
 func LoadS3Credentials() (S3Credentials, error) {
 	var credentials S3Credentials
 
@@ -39,6 +40,7 @@ func LoadS3Credentials() (S3Credentials, error) {
 	return credentials, nil
 }
 
+// SaveHostConfig сохраняет конфигурацию Host в JSON-файл.
 func SaveHostConfig(root string, cfg HostConfig) error {
 	data, err := json.Marshal(&cfg, jsontext.WithIndent("  "))
 	if err != nil {
@@ -55,6 +57,7 @@ func SaveHostConfig(root string, cfg HostConfig) error {
 	return nil
 }
 
+// LoadHostConfig загружает конфигурацию Host из JSON-файла.
 func LoadHostConfig(root string) (HostConfig, error) {
 	fullPath := filepath.Join(root, "host-config.json")
 
@@ -72,6 +75,7 @@ func LoadHostConfig(root string) (HostConfig, error) {
 	return cfg, nil
 }
 
+// ValidateS3Config проверяет наличие обязательных параметров S3.
 func ValidateS3Config(cfg HostConfig) error {
 	if cfg.S3Endpoint == "" {
 		return fmt.Errorf("s3_endpoint is required")

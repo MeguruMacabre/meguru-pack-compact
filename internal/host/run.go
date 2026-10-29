@@ -12,6 +12,7 @@ import (
 	"github.com/MeguruMacabre/meguru-pack-compact/internal/storage"
 )
 
+// Run запускает Host: сканирует сборку, сравнивает изменения и публикует обновление в S3.
 func Run(ctx context.Context) error {
 	appRoot, err := os.Getwd()
 	if err != nil {

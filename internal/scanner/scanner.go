@@ -29,6 +29,7 @@ var ignoredFiles = map[string]struct{}{
 	"desktop.ini": {},
 }
 
+// Scan рекурсивно сканирует директорию и возвращает сведения о файлах, исключая игнорируемые.
 func Scan(root string) ([]File, error) {
 	var gameFiles []File
 	err := filepath.WalkDir(root, func(path string, d fs.DirEntry, err error) error {
@@ -78,16 +79,19 @@ func Scan(root string) ([]File, error) {
 	return gameFiles, nil
 }
 
+// shouldSkipDir проверяет, нужно ли исключить директорию из сканирования.
 func shouldSkipDir(name string) bool {
 	_, exists := ignoredDirs[name]
 	return exists
 }
 
+// shouldSkipFile проверяет, нужно ли исключить файл из сканирования.
 func shouldSkipFile(name string) bool {
 	_, exists := ignoredFiles[name]
 	return exists
 }
 
+// hashFile вычисляет SHA-256 файла и возвращает его шестнадцатеричную запись.
 func hashFile(path string) (string, error) {
 	file, err := os.Open(path)
 	if err != nil {

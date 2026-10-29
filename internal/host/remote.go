@@ -11,6 +11,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 )
 
+// readRemoteManifest скачивает опубликованный манифест из S3 и преобразует JSON в структуру Go.
 func readRemoteManifest(
 	ctx context.Context,
 	client *s3.Client,

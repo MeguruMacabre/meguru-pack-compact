@@ -19,6 +19,7 @@ import (
 	"github.com/aws/smithy-go"
 )
 
+// publishPackFiles проверяет наличие всех объектов сборки в S3 и загружает недостающие.
 func publishPackFiles(
 	ctx context.Context,
 	client *s3.Client,
@@ -36,6 +37,7 @@ func publishPackFiles(
 	return nil
 }
 
+// uploadPackFile создаёт проверенную временную копию файла и загружает её в S3, если объект отсутствует.
 func uploadPackFile(
 	ctx context.Context,
 	client *s3.Client,
@@ -118,6 +120,7 @@ func uploadPackFile(
 	return nil
 }
 
+// publishManifest сериализует манифест в JSON и публикует его в S3.
 func publishManifest(
 	ctx context.Context,
 	client *s3.Client,
@@ -148,6 +151,7 @@ func publishManifest(
 	return nil
 }
 
+// verifyFileHash проверяет SHA-256 открытого файла и возвращает позицию чтения в начало.
 func verifyFileHash(
 	openedFile *os.File,
 	expectedHash string,

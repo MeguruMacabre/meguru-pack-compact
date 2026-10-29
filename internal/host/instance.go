@@ -16,6 +16,7 @@ type InstancePaths struct {
 	GameRoot     string
 }
 
+// prepareInstance проверяет директорию сборки и определяет пути инстанса и игры.
 func prepareInstance(
 	appRoot string,
 	cfg config.HostConfig,
@@ -45,6 +46,7 @@ func prepareInstance(
 	}, nil
 }
 
+// dirExists проверяет существование директории внутри указанного корня.
 func dirExists(root string, name string) (bool, error) {
 	dirPath := filepath.Join(root, name)
 

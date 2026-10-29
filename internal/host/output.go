@@ -6,6 +6,7 @@ import (
 	"github.com/MeguruMacabre/meguru-pack-compact/internal/manifest"
 )
 
+// printManifest выводит список файлов манифеста с размерами, хешами и правилами обновления.
 func printManifest(packManifest manifest.Manifest) {
 	fmt.Printf("Manifest v%d\n", packManifest.FormatVersion)
 	fmt.Printf("Files: %d\n\n", len(packManifest.Files))

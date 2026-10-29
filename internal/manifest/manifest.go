@@ -22,6 +22,7 @@ type File struct {
 	Managed bool   `json:"managed"`
 }
 
+// Build создаёт манифест из отсканированных файлов и определяет правила управления ими.
 func Build(formatVersion int, scannedFiles []scanner.File, instanceRoot string, gameRoot string) (Manifest, error) {
 	files := make([]File, 0, len(scannedFiles))
 	for _, file := range scannedFiles {
@@ -45,6 +46,7 @@ func Build(formatVersion int, scannedFiles []scanner.File, instanceRoot string, 
 	return manifest, nil
 }
 
+// Save сериализует манифест и сохраняет его в manifest.json.
 func Save(dir string, manifest Manifest) error {
 	data, err := json.Marshal(&manifest, jsontext.WithIndent("  "))
 	if err != nil {
@@ -60,6 +62,7 @@ func Save(dir string, manifest Manifest) error {
 	return nil
 }
 
+// Load читает manifest.json и преобразует его в структуру Manifest.
 func Load(dir string) (Manifest, error) {
 	manifestPath := filepath.Join(dir, "manifest.json")
 	data, err := os.ReadFile(manifestPath)

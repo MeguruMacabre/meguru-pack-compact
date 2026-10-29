@@ -5,6 +5,7 @@ import (
 	"github.com/MeguruMacabre/meguru-pack-compact/internal/scanner"
 )
 
+// buildPackManifest сканирует инстанс, формирует манифест сборки и сохраняет его на диск.
 func buildPackManifest(appRoot string, paths InstancePaths) (manifest.Manifest, error) {
 
 	scannedFiles, err := scanner.Scan(paths.InstanceRoot)

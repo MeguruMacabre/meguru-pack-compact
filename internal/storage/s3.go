@@ -14,6 +14,7 @@ import (
 	"github.com/aws/smithy-go"
 )
 
+// NewS3Client создаёт S3-клиент с заданным endpoint, регионом и учётными данными.
 func NewS3Client(
 	ctx context.Context,
 	hostConfig config.HostConfig,
@@ -41,6 +42,7 @@ func NewS3Client(
 	return client, nil
 }
 
+// CheckBucket проверяет доступность указанного S3-бакета.
 func CheckBucket(
 	ctx context.Context,
 	client *s3.Client,
@@ -57,6 +59,7 @@ func CheckBucket(
 	return nil
 }
 
+// Upload загружает данные в S3 по указанному ключу.
 func Upload(
 	ctx context.Context,
 	client *s3.Client,
@@ -76,6 +79,7 @@ func Upload(
 	return nil
 }
 
+// OpenObject открывает объект S3 для потокового чтения.
 func OpenObject(
 	ctx context.Context,
 	client *s3.Client,
@@ -94,6 +98,7 @@ func OpenObject(
 	return output.Body, nil
 }
 
+// ObjectExists проверяет наличие объекта в S3, не скачивая его содержимое.
 func ObjectExists(
 	ctx context.Context,
 	client *s3.Client,
@@ -120,6 +125,7 @@ func ObjectExists(
 	return true, nil
 }
 
+// UploadIfAbsent загружает объект в S3 только при отсутствии объекта с таким ключом.
 func UploadIfAbsent(
 	ctx context.Context,
 	client *s3.Client,
