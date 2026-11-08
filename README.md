@@ -1,4 +1,4 @@
-# Meguru Pack Compact
+# Meguru Pack Compact [WIP]
 
 **Meguru Pack Compact** - легковесный инструмент для распространения и автоматического обновления Minecraft-сборок, написанный на Go.
 
